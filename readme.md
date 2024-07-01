@@ -1,12 +1,17 @@
 # MongoDB Developer's Toolkit: CRUD Mastery with Node.js, Java, Python
 ## Indexing
 
-* [MONGODB INTRODUCTION](#mongodb-introduction)
-  * [What is MongoDB](#what-is-mongodb)
-  * [Key Features of MongoDB](#key-features-of-mongodb)
-* [Getting Started With MongoDB Atlas](#getting-started-with-mongodb-atlas)
-* [MongoDB and the Document Model](#mongodb-and-the-document-model)
-  * [Databases, Collections, and Documents](#databases-collections-and-documents) 
+- [MONGODB INTRODUCTION](#mongodb-introduction)
+  - [Introduction](#introduction)
+  - [What is MongoDB](#what-is-mongodb)
+  - [Key Features of MongoDB:](#key-features-of-mongodb)
+- [GETTING STARTED WITH MONGODB ATLAS](#getting-started-with-mongodb-atlas)
+  - [Steps to Get Started:](#steps-to-get-started)
+- [MONGODB AND THE DOCUMENT MODEL](#mongodb-and-the-document-model)
+  - [Overview](#overview)
+  - [Databases, Collections, and Documents](#databases-collections-and-documents)
+    - [Key Features](#key-features)
+    - [Summary](#summary)
 
 
 #   MONGODB INTRODUCTION
