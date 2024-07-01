@@ -1,8 +1,6 @@
 # MongoDB Developer's Toolkit: CRUD Mastery with Node.js, Java, Python
 ## Indexing
 
-- [MongoDB Developer's Toolkit: CRUD Mastery with Node.js, Java, Python](#mongodb-developers-toolkit-crud-mastery-with-nodejs-java-python)
-  - [Indexing](#indexing)
 - [MONGODB INTRODUCTION](#mongodb-introduction)
   - [Introduction](#introduction)
   - [What is MongoDB](#what-is-mongodb)
