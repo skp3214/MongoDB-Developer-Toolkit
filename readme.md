@@ -1,18 +1,39 @@
 # MongoDB Developer's Toolkit: CRUD Mastery with Node.js, Java, Python
 ## Indexing
 
+- [MongoDB Developer's Toolkit: CRUD Mastery with Node.js, Java, Python](#mongodb-developers-toolkit-crud-mastery-with-nodejs-java-python)
+  - [Indexing](#indexing)
 - [MONGODB INTRODUCTION](#mongodb-introduction)
   - [Introduction](#introduction)
   - [What is MongoDB](#what-is-mongodb)
   - [Key Features of MongoDB:](#key-features-of-mongodb)
-- [GETTING STARTED WITH MONGODB ATLAS](#getting-started-with-mongodb-atlas)
+- [GETTING STARTED WITH MONGODB ATLAS](#getting-started-with-mongodb-atlas-)
   - [Steps to Get Started:](#steps-to-get-started)
 - [MONGODB AND THE DOCUMENT MODEL](#mongodb-and-the-document-model)
   - [Overview](#overview)
   - [Databases, Collections, and Documents](#databases-collections-and-documents)
     - [Key Features](#key-features)
     - [Summary](#summary)
-
+- [CONNECTING TO A MONGODB DATABASE](#connecting-to-a-mongodb-database)
+  - [MongoDB Connection Strings: A Comprehensive Guide](#mongodb-connection-strings-a-comprehensive-guide)
+    - [Example of a MongoDB Connection String](#example-of-a-mongodb-connection-string)
+    - [Breakdown of the Example](#breakdown-of-the-example)
+    - [Example in Context](#example-in-context)
+    - [Components of a MongoDB Connection String](#components-of-a-mongodb-connection-string)
+  - [CONNECTING TO A MONGODB DATABASE](#connecting-to-a-mongodb-database-1)
+    - [Introduction](#introduction-1)
+  - [1. Connecting to a MongoDB Atlas Cluster with the Shell](#1-connecting-to-a-mongodb-atlas-cluster-with-the-shell)
+    - [Steps:](#steps)
+  - [2. Connecting to a MongoDB Atlas Cluster with Compass](#2-connecting-to-a-mongodb-atlas-cluster-with-compass)
+    - [Steps:](#steps-1)
+  - [3. Connecting from Applications](#3-connecting-from-applications)
+    - [Node.js (Using the MongoDB Node.js Driver)](#nodejs-using-the-mongodb-nodejs-driver)
+    - [Python (Using the PyMongo Driver)](#python-using-the-pymongo-driver)
+    - [Java (Using the MongoDB Java Driver)](#java-using-the-mongodb-java-driver)
+- [CRUD OPERATIONS](#crud-operations)
+  - [1. INSERT AND FIND](#1-insert-and-find)
+  - [2. REPLACE, UPDATE AND DELETE](#2-replace-update-and-delete)
+  - [3. MODIFYING QUERY RESULTS](#3-modifying-query-results)
 
 #   MONGODB INTRODUCTION
 
@@ -133,7 +154,7 @@ MongoDB is a general-purpose database used for a variety of use cases and is par
 
 ## MongoDB Connection Strings: A Comprehensive Guide
 
-MongoDB connection strings encapsulate all the necessary information required to connect to a MongoDB database instance. Understanding these connection strings is crucial for establishing a successful connection to your MongoDB server. Below is a detailed breakdown of the components of a MongoDB connection string:
+MongoDB's connection strings encapsulate all the necessary information required to connect to a MongoDB database instance. Understanding these connection strings is crucial for establishing a successful connection to your MongoDB server. Below is a detailed breakdown of the components of a MongoDB connection string:
 
 ### Example of a MongoDB Connection String
 
@@ -174,7 +195,7 @@ In this example:
    - The protocol specifies the communication protocol used to connect to the MongoDB server.
    - Common protocols include:
      - `mongodb://` for unencrypted connections.
-     - `mongodb+srv://` for connections using DNS seedlist discovery.
+     - `mongodb+srv://` for connections using DNS seed list discovery.
 
 2. **Hostname and Port ( CLUSTER URL)**
    - The hostname and port components denote the address and port number of the MongoDB server.
@@ -194,6 +215,7 @@ In this example:
      - `retryWrites=true` to enable automatic retries of certain write operations.
      - `w=majority` to set the write concern to "majority".
 
+**[Back To Top ⬆ ](#indexing)**
 ## CONNECTING TO A MONGODB DATABASE
 
 ### Introduction
@@ -296,7 +318,7 @@ import com.mongodb.ConnectionString;
 
 public class Main {
     public static void main(String[] args) {
-        // MongoDB connection string
+        // MongoDB's connection string
         String uri = "mongodb+srv://<username>:<password>@<cluster-url>/<dbname>?retryWrites=true&w=majority";
 
         // Connect to MongoDB Atlas
@@ -310,4 +332,390 @@ public class Main {
 }
 ```
 ---
+
+**[Back To Top ⬆ ](#indexing)**
+
+# CRUD OPERATIONS
+## 1. INSERT AND FIND
+  When you insert a document in a collection, it returns insertedId.
+  - ## insertOne()
+         db.<collection>.insertOne({<document>})
+      *Example*
+
+      ```js
+      db.Sales.insertOne(
+         { 
+         'item': 'abc',   // key : value
+         'price': 10, 
+         'quantity': 2, 
+         'date': new Date('2014-03-01T08:00:00Z') 
+         }
+      )
+      ```
+
+     ### *You can see the insertedId in the terminal output.*
+
+      ![alt text](image.png)
+  - ## insertMany()
+    
+        db.<collection>.insertMany([{<document>},{<document>},{<document>}])
+      
+      *Example*
+
+      ```js
+      db.Sales.insertMany(
+      [
+         { 'item': 'jkl', 'price': 20, 'quantity': 1, 'date': new Date('2014-03-01T09:00:00Z') },
+         { 'item': 'xyz', 'price': 5, 'quantity': 10, 'date': new Date('2014-03-15T09:00:00Z') },
+         { 'item': 'xyz', 'price': 5, 'quantity': 20, 'date': new Date('2014-04-04T11:21:39.736Z') },
+         { 'item': 'abc', 'price': 10, 'quantity': 10, 'date': new Date('2014-04-04T21:23:13.331Z') },
+         { 'item': 'def', 'price': 7.5, 'quantity': 5, 'date': new Date('2015-06-04T05:08:13Z') },
+         { 'item': 'def', 'price': 7.5, 'quantity': 10, 'date': new Date('2015-09-10T08:43:00Z') },
+         { 'item': 'abc', 'price': 10, 'quantity': 5, 'date': new Date('2016-02-06T20:20:13Z') },
+      ]
+      );
+      ```
+      ### *You can see the insertedIds in the terminal output.*
+
+      ![alt text](image-1.png)
+
+  - ## find()
+         db.<collection>.find()
+      It returns all the documents in the collection
+
+      *Example*
+      ```js
+      db.sales.find()
+      ```
+      ![alt text](image-2.png)
+
+  - ## findOne()
+        db.<collection>.findOne()
+      It returns the first document in the collection.
+
+      *Example*
+      ```js
+      db.sales.findOne()
+      ```
+
+      ![alt text](image-3.png)
+
+  - ## find({query})
+        db.<collection>.find({query})
+      It returns the documents that match the query.
+
+      *Example*
+      ```js
+      db.sales.find({item: 'xyz'})
+      ```
+      There is 2 documents with same query.
+
+      ![alt text](image-4.png)
+
+  - ## findOne({query})
+        db.<collection>.findOne({query})
+        
+      It returns the first document that match the query.
+
+      *Example*
+      ```js
+      db.sales.findOne({item: 'xyz'})
+      ```
+      ![alt text](image-5.png)
+
+  - ## find({ $in operator })
+        db.<collection>.find({<field>:{$in:[<value>,<value>,<value>]}})
+        
+      It returns the documents that match the value in the array.
+
+      *Example*
+      ```js
+      db.sales.find({price:{$in:[10,5,20]}})
+      ```
+      ![alt text](image-6.png)
+
+  - ## find({comparison operator})
+    - **$gt** : stands for `greater than`.
+    - **$lt** : stands for `less than`.
+    - **$gte** : stands for `greater than or equal`.
+    - **$lte** : stands for `less than or equal`.
+    - **$ne** : stands for `not equal`.
   
+          db.<collection>.find({<field>:{$(comparison operator):<value>}})
+          
+
+      *Example*
+      ```js
+      db.movies.find({"imdb.rating":{$gt:7}})
+      ```
+      ![alt text](image-7.png)
+
+            db.<collection>.find({
+            <field>:{$(comparison operator):<value>},
+            <field:{$(comparison operator):<value>}
+            })
+
+      *Example*
+
+      ```js
+         db.movies.find({
+         "imdb.rating":{$gt:7},
+         "tomatoes.viewer.rating":{$gt:4},
+         })
+      ```
+
+      ![alt text](image-8.png)
+
+  - ## find({query in Array})
+         db.<collection>.find({<field>:{
+          $elemMatch:{$eq:<value>}
+         }})
+      It returns the documents that match the value in the array.
+
+      *Example*
+      ```js
+      db.movies.find({cast:{
+        $elemMatch:{$eq:"John Bowers"}
+      }})
+      ```
+      ![alt text](image-9.png)
+
+  - ## find({logical operator})
+    * **$and**
+    * **$or**
+         
+           db.<collection>.find({
+            $(logical operator):[
+              {<expression>},
+              {<expression>},
+            ]
+           })
+
+      *$and Example*
+      ```js
+      db.movies.find({
+        $and:[
+          {"imdb.rating":{$gte:6.9}},
+          {runtime:65}
+          ]
+      })
+      ```
+
+      ![alt text](image-10.png)
+
+      *$or Example*
+      ```js
+      db.movies.find(
+        $or:[
+          {runtime:65},
+          {directors:{
+            $elemMatch:{$eq:"Winsor McCay"}
+          }}
+        ]
+      )
+      ```
+      ![alt text](image-11.png)
+
+**[Back To Top ⬆ ](#indexing)**
+
+## 2. REPLACE, UPDATE AND DELETE
+
+  - ## replaceOne(filter , replacement)
+  
+    * **filter**: The filter is used to find the document to be replaced.   
+    * **replacement**: The replacement document is used to replace the document found by the filter.
+    * **options**: The options are used to specify the behavior of the replaceOne() method.
+    * **Upsert Option**:
+      When upsert is set to true, if no document matches the filter, MongoDB will insert the replacement document as a new document.
+      If a document matches the filter, it will be replaced with the replacement document.
+  
+          db.<collection>.replaceOne(filter, replacement, options)
+
+    *Example*
+
+    ```js
+    db.sales.replaceOne(
+       {_id:new ObjectId("6682e1a165332a71e20576f5")},
+       {
+        "item": "abc",
+        "price": 15,
+        "quantity": 5,
+        "date": {
+          "$date": "2014-03-01T08:00:00Z"
+          }
+       }
+       {
+        upsert: true
+       }
+    )
+    ```
+    ![alt text](image-12.png)
+
+  - ## updateOne(filter, update, options)
+          db.<collection>.updateOne(filter, update, options)
+
+      *Example*
+      ```js
+      db.movies.updateOne(
+        {title:"The Matrix"},
+        {$set:{title:"The Matrix Reloaded"}}
+      )
+      ```
+      ![alt text](image-13.png)
+
+      ```js
+      db.movies.updateOne({
+        {title:"The Matrix Reloaded"},
+        {
+          $push:{
+            genres:"Horror"
+          }
+        }
+      })
+      ```
+      ![alt text](image-14.png)
+
+  - ## findAndModify(query,update,options)
+        db.<collection>.findAndModify(query,update,options)
+
+    *Example*
+
+    ```js
+    db.movies.findAndModify(
+      {
+        query:{title:"The Matrix Reloaded"},
+        update:{
+          $inc:{"imdb.rating":1}
+        },
+        new:true
+      }
+    )
+    ```
+    ![alt text](image-15.png)
+
+    *Rating increased by 1.*
+
+    ![alt text](image-16.png)
+
+  - ## updateMany(filter,update)
+         db.<collection>.updateMany(filter,update)
+
+      *Example*
+      ```js
+      db.movies.updateMany(
+        {year:1999},
+        {
+          $inc:{"imdb.rating":-1}
+        }
+      )
+      ```
+      ![alt text](image-17.png)
+
+  - ## deleteOne(filter)
+        db.<collection>.deleteOne(filter)
+        
+      *Example*
+      ```js
+      db.sales.deleteOne({price:15})
+      ```
+      ![alt text](image-18.png)
+
+  - ## deleteMany(filter)
+    It will delete all the document that matches the filter.
+
+        db.<collection>.deleteMany(filter)
+
+    *Example*
+    ```js
+    db.sales.deleteMany({price:5})
+    ```
+    ![alt text](image-19.png)
+
+**[Back To Top ⬆ ](#indexing)**
+
+## 3. MODIFYING QUERY RESULTS
+  
+  - ## Sorting and Limiting Query Result 
+    - **limit(n)**
+         
+           db.<collection>.find().limit(n)
+      *Example*
+      ```js
+      db.sales.find().limit(2)
+      ```
+      ![alt text](image-20.png)
+
+    - **sort({field:n})**
+       
+       n=1 Ascending.
+       n=-1 Descending.
+
+             db.<collection>.find().sort({filed:n})
+
+      *Example*
+      ```js
+      db.sales.find().sort({item:1})
+      ```
+      ![alt text](image-21.png)
+
+      ```js
+      db.movies.find({"imdb.rating":{
+        $ge:6
+      }},{"imdb.rating":-1}).sort({"imdb.rating":-1})
+      ```
+      ![alt text](image-22.png)
+
+  - ## Returning Specific Data from a Query 
+  
+    - Getting single field only along with _id.
+  
+            db.<collection>.find().project({field:1})
+    - - 1 mean include and 0 means exclude.
+    
+    *Example*
+    ```js
+    db.movies.find().projection({cast:1});
+    ```
+    ![alt text](image-23.png)
+
+    - Getting more than 1 field along with _id.
+  
+             db.<collection>.find().projection({filed1:1,field2:1})
+
+    *Example*
+    ```js
+    db.movies.find().projection({cast:1,title:1})
+    ```
+    ![alt text](image-24.png)
+
+    - Excluding the desired filed.
+   
+      *Example*
+      ```js
+      db.movies.find().projection({cast:0,title:0})
+      ```
+
+      ![alt text](image-25.png)
+    
+  - ## Counting Documents in MongoDB Documents
+    
+    - countDocuments({filter})
+            
+            db.<collection>.countDocuments()
+
+      *Example*
+      ```js
+      db.movies.countDocuments()
+      ```
+      ![alt text](image-26.png)
+
+      *Example*
+      ```js
+      db.movies.countDocuments("imdb.rating":{
+        $gte: 8
+      })
+      ```
+
+      ![alt text](image-27.png)
+
+---
