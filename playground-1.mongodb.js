@@ -1,11 +1,11 @@
 
 use('sample_mflix');
 
- 
+db.Texas_Theatre_Summary.find()
+  
+  
 
-db.movies.countDocuments({"imdb.rating":{
-    $gte: 8
-}})
+
 
 
 

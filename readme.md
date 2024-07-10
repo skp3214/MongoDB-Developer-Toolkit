@@ -7,7 +7,7 @@
   - [Introduction](#introduction)
   - [What is MongoDB](#what-is-mongodb)
   - [Key Features of MongoDB:](#key-features-of-mongodb)
-- [GETTING STARTED WITH MONGODB ATLAS](#getting-started-with-mongodb-atlas-)
+- [GETTING STARTED WITH MONGODB ATLAS](#getting-started-with-mongodb-atlas)
   - [Steps to Get Started:](#steps-to-get-started)
 - [MONGODB AND THE DOCUMENT MODEL](#mongodb-and-the-document-model)
   - [Overview](#overview)
@@ -22,8 +22,8 @@
     - [Components of a MongoDB Connection String](#components-of-a-mongodb-connection-string)
   - [CONNECTING TO A MONGODB DATABASE](#connecting-to-a-mongodb-database-1)
     - [Introduction](#introduction-1)
-  - [1. Connecting to a MongoDB Atlas Cluster with the Shell](#1-connecting-to-a-mongodb-atlas-cluster-with-the-shell)
-    - [Steps:](#steps)
+    - [1. Connecting to a MongoDB Atlas Cluster with the Shell](#1-connecting-to-a-mongodb-atlas-cluster-with-the-shell)
+      - [Steps:](#steps)
   - [2. Connecting to a MongoDB Atlas Cluster with Compass](#2-connecting-to-a-mongodb-atlas-cluster-with-compass)
     - [Steps:](#steps-1)
   - [3. Connecting from Applications](#3-connecting-from-applications)
@@ -34,6 +34,27 @@
   - [1. INSERT AND FIND](#1-insert-and-find)
   - [2. REPLACE, UPDATE AND DELETE](#2-replace-update-and-delete)
   - [3. MODIFYING QUERY RESULTS](#3-modifying-query-results)
+- [MONGODB AGGREGATION](#mongodb-aggregation)
+    - [1. Aggregation Pipeline](#1-aggregation-pipeline)
+    - [2. Key Stages](#2-key-stages)
+  - [Using `$match` and `$group` Stages in MongoDB Aggregation Pipeline](#using-match-and-group-stages-in-mongodb-aggregation-pipeline)
+    - [Example 1: $match](#example-1-match)
+    - [Example 2: $group](#example-2-group)
+    - [Combined Example: $match and $group](#combined-example-match-and-group)
+    - [Breakdown of the Stages](#breakdown-of-the-stages)
+  - [Using `$sort` and `$limit` Stages in a MongoDB Aggregation Pipeline](#using-sort-and-limit-stages-in-a-mongodb-aggregation-pipeline)
+    - [Example: $sort](#example-sort)
+    - [Example: $limit](#example-limit)
+    - [Combined Example: $sort and $limit](#combined-example-sort-and-limit)
+    - [Breakdown of the Stages](#breakdown-of-the-stages-1)
+  - [Using `$project`, `$count` and `$set` Stages in a MongoDB Aggregation Pipeline](#using-project-count-and-set-stages-in-a-mongodb-aggregation-pipeline)
+    - [Example: $project](#example-project)
+    - [Example: $count](#example-count)
+    - [Example: $set](#example-set)
+    - [Combined Example: $match, $group, $project, and $set](#combined-example-match-group-project-and-set)
+    - [Breakdown of the Stages](#breakdown-of-the-stages-2)
+  - [Using `$out` Stage in a MongoDB Aggregation Pipeline](#using-out-stage-in-a-mongodb-aggregation-pipeline)
+    - [Breakdown of the Stages with $out](#breakdown-of-the-stages-with-out)
 
 #   MONGODB INTRODUCTION
 
@@ -719,3 +740,340 @@ public class Main {
       ![alt text](image-27.png)
 
 ---
+**[Back To Top ⬆ ](#indexing)**
+
+# MONGODB AGGREGATION
+
+MongoDB Aggregation Framework is a powerful tool for performing data processing and analysis directly within the database. It allows you to transform and combine data from multiple documents, providing a way to conduct complex operations and analytics without the need to pull data into your application. Here's an introduction to its key concepts:
+
+### 1. Aggregation Pipeline
+
+The core of MongoDB’s aggregation framework is the **aggregation pipeline**. This is a series of stages that process documents. Each stage transforms the documents as they pass through the pipeline. The stages are executed in sequence, and the output of one stage is passed as input to the next stage.
+
+### 2. Key Stages
+
+- **$match**: Filters documents to pass only those that match the specified conditions.
+- **$group**: Groups documents by a specified identifier and can calculate aggregates, such as sums, averages, and counts.
+- **$project**: Reshapes documents, including or excluding fields, adding new fields, or computing new fields.
+- **$sort**: Sorts documents by a specified field.
+- **$limit**: Limits the number of documents passing through the pipeline.
+- **$skip**: Skips a specified number of documents.
+- **$unwind**: Deconstructs an array field from the input documents to output a document for each element.
+- **$lookup**: Performs a left outer join to another collection to filter in documents from the “joined” collection.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Using `$match` and `$group` Stages in MongoDB Aggregation Pipeline
+
+### Example 1: $match
+
+Suppose you want to find all theaters in the city of Mansfield.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $match: {
+      "location.address.city": "Mansfield"
+    }
+  }
+])
+```
+
+### Example 2: $group
+
+Let's say you want to group theaters by state and count the number of theaters in each state.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $group: {
+      _id: "$location.address.state",
+      theaterCount: { $count: {} }
+    }
+  }
+])
+```
+![alt text](image-28.png)
+### Combined Example: $match and $group
+
+You might also want to find the count of theaters in each city within Texas (`TX`).
+
+```javascript
+db.theaters.aggregate([
+  {
+    $match: {
+      "location.address.state": "TX"
+    }
+  },
+  {
+    $group: {
+      _id: "$location.address.city",
+      theaterCount: { $count: {} }
+    }
+  }
+])
+```
+![alt text](image-29.png)
+
+### Breakdown of the Stages
+
+1. **$match Stage**:
+    - Filters documents to pass only those that match the specified condition.
+    - In the first example, it filters theaters located in Mansfield.
+    - In the combined example, it filters theaters located in the state of Texas.
+
+2. **$group Stage**:
+    - Groups the documents by a specified identifier (e.g., city or state).
+    - Computes aggregate values such as counts, sums, averages, etc.
+    - In the second example, it groups theaters by state and counts them.
+    - In the combined example, it groups theaters by city within Texas and counts them.
+
+## Using `$sort` and `$limit` Stages in a MongoDB Aggregation Pipeline
+
+
+### Example: $sort
+
+Suppose you want to sort theaters by their `theaterId` in ascending order.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $sort: {
+      theaterId: 1
+    }
+  }
+])
+```
+
+In this example, the `$sort` stage sorts the documents by the `theaterId` field in ascending order (1 for ascending, -1 for descending).
+
+### Example: $limit
+
+If you want to limit the results to the first 5 theaters, you can use the `$limit` stage.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $limit: 5
+  }
+])
+```
+
+### Combined Example: $sort and $limit
+
+Let's combine `$sort` and `$limit` to sort the theaters by `theaterId` in descending order and limit the results to the top 3 theaters.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $sort: {
+      theaterId: -1
+    }
+  },
+  {
+    $limit: 3
+  }
+])
+```
+![alt text](image-30.png)
+
+### Breakdown of the Stages
+
+1. **$sort Stage**:
+    - Sorts the documents by the specified field(s).
+    - In the combined example, it sorts the theaters by `theaterId` in descending order.
+
+2. **$limit Stage**:
+    - Limits the number of documents passing through the pipeline.
+    - In the combined example, it limits the results to the top 3 theaters after sorting.
+
+## Using `$project`, `$count` and `$set` Stages in a MongoDB Aggregation Pipeline
+
+### Example: $project
+
+Suppose you want to project only the `theaterId` and `location.address.city` fields from the documents.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $project: {
+      _id: 0,
+      theaterId: 1,
+      city: "$location.address.city"
+    }
+  }
+])
+```
+
+In this example, the `$project` stage reshapes the documents to include only the `theaterId` and `city` fields.
+
+### Example: $count
+
+If you want to count the total number of theaters, you can use the `$count` stage.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $count: "totalTheaters"
+  }
+])
+```
+
+### Example: $set
+
+Let's say you want to add a new field `state` that duplicates the value of `location.address.state`.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $set: {
+      state: "$location.address.state"
+    }
+  }
+])
+```
+
+### Combined Example: $match, $group, $project, and $set
+
+Let's combine several stages: filter theaters in Texas (`$match`), group by city and count the number of theaters in each city (`$group`), project the results to include the city and count (`$project`), and then use $set to create a field "fullAddress" containing the street, city, state, and zip code separated by commas.
+
+```javascript
+db.theaters.aggregate([
+  {
+    $match: {
+      "location.address.state": "TX"
+    }
+  },
+  {
+    $group: {
+      _id: {
+        city: "$location.address.city",
+        street: "$location.address.street1",
+        state: "$location.address.state",
+        zipcode: "$location.address.zipcode"
+      },
+      theaterCount: { $sum: 1 }
+    }
+  },
+  {
+    $set: {
+      fullAddress: {
+        $concat: [
+          "$_id.street", ", ",
+          "$_id.city", ", ",
+          "$_id.state", ", ",
+          "$_id.zipcode"
+        ]
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      theaterCount: 1,
+      fullAddress: 1
+    }
+  }
+])
+
+```
+![alt text](image-31.png)
+
+### Breakdown of the Stages
+
+1. **$match Stage**:
+    - Filters documents to pass only those that match the specified condition (theaters in Texas).
+
+2. **$group Stage**:
+    - Groups the documents by city and counts the number of theaters in each city.
+
+3. **$project Stage**:
+    - Reshapes the documents to include only the `city` and `theaterCount` fields, and excludes the `_id` field.
+
+4. **$set Stage**:
+    - Adds a new field `label` with the value "Number of Theaters".
+
+5. **$count Stage**:
+    - Although not included in the combined example, it can be used to count the total number of documents passing through the pipeline.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Using `$out` Stage in a MongoDB Aggregation Pipeline
+
+The `$out` stage in MongoDB’s aggregation pipeline writes the results of the aggregation to a specified collection. This stage must be the last stage in the pipeline.
+
+Here’s an example of how to modify the previous pipeline to use the `$out` stage to write the results to a new collection called `texas_theaters_summary`:
+
+```javascript
+db.theaters.aggregate([
+  {
+    $match: {
+      "location.address.state": "TX"
+    }
+  },
+  {
+    $group: {
+      _id: {
+        city: "$location.address.city",
+        street: "$location.address.street1",
+        state: "$location.address.state",
+        zipcode: "$location.address.zipcode"
+      },
+      theaterCount: { $sum: 1 }
+    }
+  },
+  {
+    $set: {
+      fullAddress: {
+        $concat: [
+          "$_id.street", ", ",
+          "$_id.city", ", ",
+          "$_id.state", ", ",
+          "$_id.zipcode"
+        ]
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      theaterCount: 1,
+      fullAddress: 1
+    }
+  },
+  {
+    $out: "texas_theaters_summary"
+  }
+])
+```
+
+### Breakdown of the Stages with $out
+
+1. **$match Stage**:
+    - Filters documents to pass only those that match the specified condition (theaters in Texas).
+
+2. **$group Stage**:
+    - Groups the documents by a compound key of `city`, `street`, `state`, and `zipcode` and counts the number of theaters in each group.
+
+3. **$set Stage**:
+    - Adds a new field `fullAddress` that concatenates the `street`, `city`, `state`, and `zipcode` fields separated by commas.
+
+4. **$project Stage**:
+    - Reshapes the documents to include only the `theaterCount` and `fullAddress` fields, excluding the `_id` field.
+
+5. **$out Stage**:
+    - Writes the results of the aggregation pipeline to the specified collection `texas_theaters_summary`.
+
+This pipeline processes the documents and writes the results to the `texas_theaters_summary` collection, which will contain documents like this:
+
+```json
+{
+  "theaterCount": 1,
+  "fullAddress": "2041 Highway 287 N, Mansfield, TX, 76063"
+}
+```
+![alt text](image-32.png)
+
+The `$out` stage will overwrite the `texas_theaters_summary` collection if it already exists. If it does not exist, MongoDB will create it.
+
+**[Back To Top ⬆ ](#indexing)**
