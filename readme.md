@@ -55,6 +55,57 @@
     - [Breakdown of the Stages](#breakdown-of-the-stages-2)
   - [Using `$out` Stage in a MongoDB Aggregation Pipeline](#using-out-stage-in-a-mongodb-aggregation-pipeline)
     - [Breakdown of the Stages with $out](#breakdown-of-the-stages-with-out)
+- [MONGODB INDEXES](#mongodb-indexes)
+    - [Why Use Indexes?](#why-use-indexes)
+    - [Types of Indexes](#types-of-indexes)
+    - [Creating Indexes](#creating-indexes)
+    - [Viewing Indexes](#viewing-indexes)
+    - [Dropping Indexes](#dropping-indexes)
+    - [Best Practices](#best-practices)
+  - [Creating a Single Field Index in MongoDB](#creating-a-single-field-index-in-mongodb)
+    - [Example in MongoDB Shell](#example-in-mongodb-shell)
+    - [Explanation](#explanation)
+    - [Creating an Index on the `location.geo` Field](#creating-an-index-on-the-locationgeo-field)
+  - [Creating a Multikey Index in MongoDB](#creating-a-multikey-index-in-mongodb)
+    - [Creating a Multikey Index](#creating-a-multikey-index)
+    - [Use Case Example](#use-case-example)
+    - [Example Scenario: JobApp](#example-scenario-jobapp)
+    - [Use Case Example for JobApp](#use-case-example-for-jobapp)
+    - [Benefits of Multikey Indexes](#benefits-of-multikey-indexes)
+    - [Best Practices](#best-practices-1)
+  - [Working with Compound Indexes in MongoDB](#working-with-compound-indexes-in-mongodb)
+    - [Creating a Compound Index](#creating-a-compound-index)
+      - [Example Document](#example-document)
+      - [Creating a Compound Index](#creating-a-compound-index-1)
+    - [Use Case Examples](#use-case-examples)
+    - [Understanding Index Prefix](#understanding-index-prefix)
+    - [Querying with `explain`](#querying-with-explain)
+    - [Best Practices](#best-practices-2)
+    - [Summary](#summary-1)
+  - [Deleting MongoDB Indexes](#deleting-mongodb-indexes)
+    - [Deleting an Index](#deleting-an-index)
+      - [1. **Delete a Specific Index**](#1-delete-a-specific-index)
+      - [2. **Delete Multiple Indexes**](#2-delete-multiple-indexes)
+      - [3. **Delete All Indexes**](#3-delete-all-indexes)
+    - [Finding Index Names](#finding-index-names)
+    - [Example Scenario](#example-scenario)
+      - [Viewing Indexes](#viewing-indexes-1)
+      - [Deleting a Specific Index](#deleting-a-specific-index)
+      - [Deleting All Indexes](#deleting-all-indexes)
+    - [Summary](#summary-2)
+  - [Hiding and Showing MongoDB Indexes](#hiding-and-showing-mongodb-indexes)
+    - [Hiding an Index](#hiding-an-index)
+      - [Example](#example)
+    - [Showing an Index](#showing-an-index)
+      - [Example](#example-1)
+    - [Checking Index Visibility](#checking-index-visibility)
+      - [Example](#example-2)
+    - [Example Scenario](#example-scenario-1)
+      - [Hiding an Index](#hiding-an-index-1)
+      - [Checking Indexes](#checking-indexes)
+      - [Output](#output)
+      - [Unhiding an Index](#unhiding-an-index)
+    - [Summary](#summary-3)
 
 #   MONGODB INTRODUCTION
 
@@ -1075,5 +1126,508 @@ This pipeline processes the documents and writes the results to the `texas_theat
 ![alt text](image-32.png)
 
 The `$out` stage will overwrite the `texas_theaters_summary` collection if it already exists. If it does not exist, MongoDB will create it.
+
+**[Back To Top ⬆ ](#indexing)**
+
+# MONGODB INDEXES
+
+Indexes in MongoDB are special data structures that store a small portion of the collection's data set in an easy-to-traverse form. The index stores the value of a specific field or set of fields, ordered by the value of the field as specified in the index.
+
+### Why Use Indexes?
+- **Improve Query Performance:** Indexes support the efficient execution of queries by providing a faster path to data retrieval.
+- **Reduce Query Execution Time:** Indexes allow the database to quickly locate the required data without scanning the entire collection.
+
+### Types of Indexes
+1. **Single Field Index:** Index on a single field.
+   ```javascript
+   db.collection.createIndex({ field: 1 })  // Ascending order
+   db.collection.createIndex({ field: -1 }) // Descending order
+   ```
+
+2. **Compound Index:** Index on multiple fields.
+   ```javascript
+   db.collection.createIndex({ field1: 1, field2: -1 })
+   ```
+
+3. **Multikey Index:** Index on an array field, allowing queries to search for array elements.
+   ```javascript
+   db.collection.createIndex({ arrayField: 1 })
+   ```
+
+4. **Text Index:** Index for text search on string content.
+   ```javascript
+   db.collection.createIndex({ field: "text" })
+   ```
+
+5. **Geospatial Index:** Index for spatial data queries.
+   ```javascript
+   db.collection.createIndex({ location: "2dsphere" })
+   ```
+
+6. **Hashed Index:** Index based on a hash of the field's value.
+   ```javascript
+   db.collection.createIndex({ field: "hashed" })
+   ```
+
+### Creating Indexes
+To create an index, use the `createIndex` method on the collection. For example:
+```javascript
+db.users.createIndex({ username: 1 })
+```
+
+### Viewing Indexes
+To view the indexes on a collection, use the `getIndexes` method:
+```javascript
+db.collection.getIndexes()
+```
+
+### Dropping Indexes
+To drop an index, use the `dropIndex` method:
+```javascript
+db.collection.dropIndex("indexName")
+```
+
+### Best Practices
+1. **Index Fields Used in Queries:** Index the fields that are frequently used in query filters, sorts, and join operations.
+2. **Limit Number of Indexes:** While indexes improve read performance, they can degrade write performance as the database must update the index each time a document is written.
+3. **Monitor Index Usage:** Use MongoDB tools like `explain()` to understand how queries use indexes and optimize accordingly.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Creating a Single Field Index in MongoDB
+
+To create a single field index on the `theaterId` field in the given MongoDB document, you can use the `createIndex` method. Here's how you can do it:
+
+```javascript
+db.collection.createIndex({ theaterId: 1 })
+```
+
+This command will create an ascending index on the `theaterId` field. If you want to create a descending index, you can use `-1` instead of `1`:
+
+```javascript
+db.collection.createIndex({ theaterId: -1 })
+```
+
+### Example in MongoDB Shell
+
+```javascript
+db.theaters.createIndex({ theaterId: 1 })
+```
+
+### Explanation
+
+- `db.theaters` specifies the collection name, which you should replace with your actual collection name if it's different.
+- `createIndex` is the method to create the index.
+- `{ theaterId: 1 }` specifies that you are creating an ascending index on the `theaterId` field.
+
+### Creating an Index on the `location.geo` Field
+
+If you want to create a geospatial index on the `location.geo` field to support geospatial queries, you can use the following command:
+
+```javascript
+db.theaters.createIndex({ "location.geo": "2dsphere" })
+```
+
+This command creates a `2dsphere` index, which supports queries that calculate geometries on an Earth-like sphere.
+
+## Creating a Multikey Index in MongoDB
+
+In MongoDB, a multikey index is an index that can be created on fields that contain arrays. When you create a multikey index, MongoDB indexes each element of the array, allowing queries to efficiently filter and sort documents based on array values.
+
+### Creating a Multikey Index
+
+Suppose you have a collection of documents representing movies, and each document has a `genres` field that is an array of genres. Here’s an example document:
+
+```javascript
+{
+  "_id": ObjectId("59a47286cfa9a3a73e51e74d"),
+  "title": "Inception",
+  "director": "Christopher Nolan",
+  "genres": ["Action", "Sci-Fi", "Thriller"]
+}
+```
+
+To create a multikey index on the `genres` field, you would use the `createIndex` method:
+
+```javascript
+db.movies.createIndex({ genres: 1 })
+```
+
+### Use Case Example
+
+1. **Querying for Movies of a Specific Genre**
+
+Suppose you want to find all movies that belong to the "Action" genre. With a multikey index on the `genres` field, MongoDB can efficiently retrieve these documents.
+
+```javascript
+db.movies.find({ genres: "Action" })
+```
+
+2. **Querying for Movies of Multiple Genres**
+
+You can also query for movies that belong to multiple genres. MongoDB will use the multikey index to optimize this query.
+
+```javascript
+db.movies.find({ genres: { $all: ["Action", "Sci-Fi"] } })
+```
+
+### Example Scenario: JobApp
+
+Let's consider your JobApp, where job listings might have an array of required skills:
+
+```javascript
+{
+  "_id": ObjectId("59a47286cfa9a3a73e51e74d"),
+  "title": "Software Developer",
+  "company": "TechCorp",
+  "location": "New York",
+  "skills": ["JavaScript", "React", "Node.js"]
+}
+```
+
+To create a multikey index on the `skills` field:
+
+```javascript
+db.jobs.createIndex({ skills: 1 })
+```
+
+### Use Case Example for JobApp
+
+1. **Querying for Jobs Requiring a Specific Skill**
+
+If you want to find all job listings that require "React":
+
+```javascript
+db.jobs.find({ skills: "React" })
+```
+
+2. **Querying for Jobs Requiring Multiple Skills**
+
+If you want to find job listings that require both "JavaScript" and "Node.js":
+
+```javascript
+db.jobs.find({ skills: { $all: ["JavaScript", "Node.js"] } })
+```
+
+### Benefits of Multikey Indexes
+
+- **Efficient Array Queries:** Allows efficient querying of documents with array fields.
+- **Improved Query Performance:** Enhances performance for queries that filter on array elements.
+
+### Best Practices
+
+- **Limit Array Size:** Large arrays can increase the index size and impact performance. Try to limit the size of arrays in your documents.
+- **Monitor Index Usage:** Use MongoDB's `explain` method to analyze query execution and ensure indexes are used effectively.
+
+Creating multikey indexes on array fields in your MongoDB collections will optimize queries that involve array elements, improving the overall performance and responsiveness of your application.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Working with Compound Indexes in MongoDB
+
+Compound indexes in MongoDB allow you to create an index on multiple fields within a document. These indexes can improve the performance of queries that filter and sort by multiple fields. 
+
+### Creating a Compound Index
+
+To create a compound index, you use the `createIndex` method and specify multiple fields in the index key specification. The order of the fields in the index is significant as it affects the types of queries that can utilize the index.
+
+#### Example Document
+Consider a collection of job listings with documents like this:
+```javascript
+{
+  "_id": ObjectId("59a47286cfa9a3a73e51e74d"),
+  "title": "Software Developer",
+  "company": "TechCorp",
+  "location": "New York",
+  "postedDate": new Date("2023-06-15"),
+  "salary": 120000
+}
+```
+
+#### Creating a Compound Index
+Suppose you frequently query this collection by `location` and `salary`. You can create a compound index on these fields:
+
+```javascript
+db.jobs.createIndex({ location: 1, salary: -1 })
+```
+
+- `location: 1` specifies an ascending order for the `location` field.
+- `salary: -1` specifies a descending order for the `salary` field.
+
+### Use Case Examples
+
+1. **Query Filtering by Location and Sorting by Salary**
+
+   With the compound index in place, this query can efficiently filter jobs by `location` and sort the results by `salary` in descending order:
+
+   ```javascript
+   db.jobs.find({ location: "New York" }).sort({ salary: -1 })
+   ```
+
+2. **Query Filtering by Location and Salary Range**
+
+   The compound index also improves performance for queries that filter by `location` and a range of `salary` values:
+
+   ```javascript
+   db.jobs.find({ location: "New York", salary: { $gt: 100000, $lt: 150000 } })
+   ```
+
+3. **Query Filtering by Location Only**
+
+   The compound index can still be used for queries that filter by `location` only:
+
+   ```javascript
+   db.jobs.find({ location: "New York" })
+   ```
+
+### Understanding Index Prefix
+
+MongoDB can use the index for queries that include a prefix of the indexed fields. In the compound index `{ location: 1, salary: -1 }`, the following queries can use the index:
+
+- Queries that filter by `location` and sort by `salary`.
+- Queries that filter by `location`.
+- Queries that filter by `location` and `salary`.
+
+However, queries that only filter by `salary` cannot use this index efficiently.
+
+### Querying with `explain`
+
+To understand how MongoDB uses the index, you can use the `explain` method:
+
+```javascript
+db.jobs.find({ location: "New York", salary: { $gt: 100000 } }).explain("executionStats")
+```
+
+The `explain` output will show whether the index is being used and how many documents are being scanned.
+
+### Best Practices
+
+- **Order Matters:** The order of fields in a compound index is significant. Place the most selective field first (the field that reduces the number of matching documents the most).
+- **Index Only Required Fields:** Limit the number of fields in the compound index to what is necessary for your queries.
+- **Monitor Index Performance:** Use MongoDB's monitoring tools to ensure that indexes are improving query performance as expected.
+
+### Summary
+
+Compound indexes in MongoDB provide a powerful way to optimize queries that filter and sort by multiple fields. By carefully selecting and ordering the fields in a compound index, you can significantly improve query performance and ensure efficient data retrieval for your application.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Deleting MongoDB Indexes
+
+Deleting indexes in MongoDB is a straightforward process. You can delete indexes to optimize performance, manage storage, or if they are no longer needed for your query patterns.
+
+### Deleting an Index
+
+#### 1. **Delete a Specific Index**
+To delete a specific index, use the `dropIndex` method and provide the name of the index you want to remove.
+
+```javascript
+db.collection.dropIndex("indexName")
+```
+
+For example, if you have an index on the `title` field in a `jobs` collection:
+
+```javascript
+db.jobs.dropIndex("title_1")
+```
+
+#### 2. **Delete Multiple Indexes**
+You can delete multiple indexes at once by providing an array of index names to the `dropIndexes` method.
+
+```javascript
+db.collection.dropIndexes(["indexName1", "indexName2"])
+```
+
+#### 3. **Delete All Indexes**
+To delete all indexes on a collection except for the `_id` index, use the `dropIndexes` method without any arguments.
+
+```javascript
+db.collection.dropIndexes()
+```
+
+For example:
+
+```javascript
+db.jobs.dropIndexes()
+```
+### Finding Index Names
+
+To determine which indexes exist on a collection, use the `getIndexes` method:
+
+```javascript
+db.collection.getIndexes()
+```
+
+For example, to list all indexes on the `jobs` collection:
+
+```javascript
+db.jobs.getIndexes()
+```
+
+This command will return an array of index specifications, including the index names.
+
+### Example Scenario
+
+Consider the `jobs` collection with the following indexes:
+
+```javascript
+db.jobs.createIndex({ title: 1 })
+db.jobs.createIndex({ location: 1, salary: -1 })
+db.jobs.createIndex({ company: 1 })
+```
+
+#### Viewing Indexes
+
+```javascript
+db.jobs.getIndexes()
+```
+
+Output:
+```json
+[
+  { "v": 2, "key": { "_id": 1 }, "name": "_id_", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "title": 1 }, "name": "title_1", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "location": 1, "salary": -1 }, "name": "location_1_salary_-1", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "company": 1 }, "name": "company_1", "ns": "yourDatabase.jobs" }
+]
+```
+
+#### Deleting a Specific Index
+
+To delete the index on the `title` field:
+
+```javascript
+db.jobs.dropIndex("title_1")
+```
+
+#### Deleting All Indexes
+
+To delete all indexes except for the `_id` index:
+
+```javascript
+db.jobs.dropIndexes()
+```
+
+### Summary
+
+- **Specific Index:** Use `db.collection.dropIndex("indexName")` to delete a specific index.
+- **Multiple Indexes:** Use `db.collection.dropIndexes(["indexName1", "indexName2"])` to delete multiple indexes.
+- **All Indexes:** Use `db.collection.dropIndexes()` to delete all indexes except the `_id` index.
+- **Find Indexes:** Use `db.collection.getIndexes()` to list all indexes on a collection.
+
+Regularly review and manage your indexes to ensure they align with your query patterns and optimize your MongoDB performance.
+
+**[Back To Top ⬆ ](#indexing)**
+
+## Hiding and Showing MongoDB Indexes
+
+In MongoDB 4.4 and later, you have the ability to hide and unhide indexes. This feature allows you to test the impact of removing an index on your query performance without actually dropping the index. If you find that the performance is acceptable without the index, you can then drop it. If not, you can unhide it.
+
+### Hiding an Index
+
+To hide an index, you use the `hideIndex` command.
+
+#### Example
+
+Suppose you have an index on the `title` field in the `jobs` collection:
+
+```javascript
+db.jobs.createIndex({ title: 1 })
+```
+
+To hide this index:
+
+```javascript
+db.jobs.hideIndex("title_1")
+```
+
+### Showing an Index
+
+To unhide (show) an index, you use the `unhideIndex` command.
+
+#### Example
+
+To unhide the previously hidden index on the `title` field:
+
+```javascript
+db.jobs.unhideIndex("title_1")
+```
+
+### Checking Index Visibility
+
+You can check whether an index is hidden or not by using the `getIndexes` method. Hidden indexes will have a `hidden` field set to `true`.
+
+#### Example
+
+To list all indexes and their visibility status:
+
+```javascript
+db.jobs.getIndexes()
+```
+
+Output:
+```json
+[
+  { "v": 2, "key": { "_id": 1 }, "name": "_id_", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "title": 1 }, "name": "title_1", "ns": "yourDatabase.jobs", "hidden": true },
+  { "v": 2, "key": { "location": 1, "salary": -1 }, "name": "location_1_salary_-1", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "company": 1 }, "name": "company_1", "ns": "yourDatabase.jobs" }
+]
+```
+
+In this example, the index on `title` is hidden.
+
+### Example Scenario
+
+Assume you have a `jobs` collection with several indexes:
+
+```javascript
+db.jobs.createIndex({ title: 1 })
+db.jobs.createIndex({ location: 1, salary: -1 })
+db.jobs.createIndex({ company: 1 })
+```
+
+#### Hiding an Index
+
+To hide the index on `location` and `salary`:
+
+```javascript
+db.jobs.hideIndex("location_1_salary_-1")
+```
+
+#### Checking Indexes
+
+To verify the index status:
+
+```javascript
+db.jobs.getIndexes()
+```
+
+#### Output
+
+```json
+[
+  { "v": 2, "key": { "_id": 1 }, "name": "_id_", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "title": 1 }, "name": "title_1", "ns": "yourDatabase.jobs" },
+  { "v": 2, "key": { "location": 1, "salary": -1 }, "name": "location_1_salary_-1", "ns": "yourDatabase.jobs", "hidden": true },
+  { "v": 2, "key": { "company": 1 }, "name": "company_1", "ns": "yourDatabase.jobs" }
+]
+```
+
+#### Unhiding an Index
+
+To unhide the `location` and `salary` index:
+
+```javascript
+db.jobs.unhideIndex("location_1_salary_-1")
+```
+
+### Summary
+
+- **Hide an Index:** Use `db.collection.hideIndex("indexName")` to hide an index.
+- **Unhide an Index:** Use `db.collection.unhideIndex("indexName")` to unhide an index.
+- **Check Index Visibility:** Use `db.collection.getIndexes()` to list indexes and check their visibility status.
+
+These commands provide a flexible way to manage your indexes and test the impact of their removal on query performance.
 
 **[Back To Top ⬆ ](#indexing)**
