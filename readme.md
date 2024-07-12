@@ -115,6 +115,25 @@
       - [Step 4: Performing a Search Query](#step-4-performing-a-search-query)
     - [Example Use Case: JobApp](#example-use-case-jobapp)
     - [Conclusion](#conclusion)
+- [INTRODUCTION TO DATA MODELING IN MONGODB](#introduction-to-data-modeling-in-mongodb)
+  - [Introduction to MongoDB Data Modeling](#introduction-to-mongodb-data-modeling)
+  - [Introduction to Data Modeling](#introduction-to-data-modeling)
+  - [Types of Data Relationships](#types-of-data-relationships)
+    - [1. One-to-One](#1-one-to-one)
+    - [2. One-to-Many](#2-one-to-many)
+    - [3. Many-to-Many](#3-many-to-many)
+  - [Modeling Data Relationships](#modeling-data-relationships)
+    - [Embedding Data in Documents](#embedding-data-in-documents)
+    - [Referencing Data in Documents](#referencing-data-in-documents)
+  - [Scaling a Data Model](#scaling-a-data-model)
+  - [Using Atlas Tools for Schema Help](#using-atlas-tools-for-schema-help)
+- [MONGODB TRANSACTIONS](#mongodb-transactions)
+  - [Introduction to ACID Transactions](#introduction-to-acid-transactions)
+    - [Introduction to ACID Transactions](#introduction-to-acid-transactions-1)
+    - [ACID Transactions in MongoDB](#acid-transactions-in-mongodb)
+  - [Using Transactions in MongoDB](#using-transactions-in-mongodb)
+    - [Example of Using Transactions in MongoDB](#example-of-using-transactions-in-mongodb)
+    - [Key Steps in Using Transactions](#key-steps-in-using-transactions)
 
 #   MONGODB INTRODUCTION
 
@@ -436,7 +455,7 @@ public class Main {
 
      ### *You can see the insertedId in the terminal output.*
 
-      ![alt text](image.png)
+      ![alt text](/assets/image.png)
   - ## insertMany()
     
         db.<collection>.insertMany([{<document>},{<document>},{<document>}])
@@ -458,7 +477,7 @@ public class Main {
       ```
       ### *You can see the insertedIds in the terminal output.*
 
-      ![alt text](image-1.png)
+      ![alt text](/assets/image-1.png)
 
   - ## find()
          db.<collection>.find()
@@ -479,7 +498,7 @@ public class Main {
       db.sales.findOne()
       ```
 
-      ![alt text](image-3.png)
+      ![alt text](/assets/image-3.png)
 
   - ## find({query})
         db.<collection>.find({query})
@@ -491,7 +510,7 @@ public class Main {
       ```
       There is 2 documents with same query.
 
-      ![alt text](image-4.png)
+      ![alt text](/assets/image-4.png)
 
   - ## findOne({query})
         db.<collection>.findOne({query})
@@ -502,7 +521,7 @@ public class Main {
       ```js
       db.sales.findOne({item: 'xyz'})
       ```
-      ![alt text](image-5.png)
+      ![alt text](/assets/image-5.png)
 
   - ## find({ $in operator })
         db.<collection>.find({<field>:{$in:[<value>,<value>,<value>]}})
@@ -513,7 +532,7 @@ public class Main {
       ```js
       db.sales.find({price:{$in:[10,5,20]}})
       ```
-      ![alt text](image-6.png)
+      ![alt text](/assets/image-6.png)
 
   - ## find({comparison operator})
     - **$gt** : stands for `greater than`.
@@ -529,7 +548,7 @@ public class Main {
       ```js
       db.movies.find({"imdb.rating":{$gt:7}})
       ```
-      ![alt text](image-7.png)
+      ![alt text](/assets/image-7.png)
 
             db.<collection>.find({
             <field>:{$(comparison operator):<value>},
@@ -545,7 +564,7 @@ public class Main {
          })
       ```
 
-      ![alt text](image-8.png)
+      ![alt text](/assets/image-8.png)
 
   - ## find({query in Array})
          db.<collection>.find({<field>:{
@@ -559,7 +578,7 @@ public class Main {
         $elemMatch:{$eq:"John Bowers"}
       }})
       ```
-      ![alt text](image-9.png)
+      ![alt text](/assets/image-9.png)
 
   - ## find({logical operator})
     * **$and**
@@ -582,7 +601,7 @@ public class Main {
       })
       ```
 
-      ![alt text](image-10.png)
+      ![alt text](/assets/image-10.png)
 
       *$or Example*
       ```js
@@ -595,7 +614,7 @@ public class Main {
         ]
       )
       ```
-      ![alt text](image-11.png)
+      ![alt text](/assets/image-11.png)
 
 **[Back To Top ⬆ ](#indexing)**
 
@@ -630,7 +649,7 @@ public class Main {
        }
     )
     ```
-    ![alt text](image-12.png)
+    ![alt text](/assets/image-12.png)
 
   - ## updateOne(filter, update, options)
           db.<collection>.updateOne(filter, update, options)
@@ -642,7 +661,7 @@ public class Main {
         {$set:{title:"The Matrix Reloaded"}}
       )
       ```
-      ![alt text](image-13.png)
+      ![alt text](/assets/image-13.png)
 
       ```js
       db.movies.updateOne({
@@ -654,7 +673,7 @@ public class Main {
         }
       })
       ```
-      ![alt text](image-14.png)
+      ![alt text](/assets/image-14.png)
 
   - ## findAndModify(query,update,options)
         db.<collection>.findAndModify(query,update,options)
@@ -672,11 +691,11 @@ public class Main {
       }
     )
     ```
-    ![alt text](image-15.png)
+    ![alt text](/assets/image-15.png)
 
     *Rating increased by 1.*
 
-    ![alt text](image-16.png)
+    ![alt text](/assets/image-16.png)
 
   - ## updateMany(filter,update)
          db.<collection>.updateMany(filter,update)
@@ -690,7 +709,7 @@ public class Main {
         }
       )
       ```
-      ![alt text](image-17.png)
+      ![alt text](/assets/image-17.png)
 
   - ## deleteOne(filter)
         db.<collection>.deleteOne(filter)
@@ -699,7 +718,7 @@ public class Main {
       ```js
       db.sales.deleteOne({price:15})
       ```
-      ![alt text](image-18.png)
+      ![alt text](/assets/image-18.png)
 
   - ## deleteMany(filter)
     It will delete all the document that matches the filter.
@@ -710,7 +729,7 @@ public class Main {
     ```js
     db.sales.deleteMany({price:5})
     ```
-    ![alt text](image-19.png)
+    ![alt text](/assets/image-19.png)
 
 **[Back To Top ⬆ ](#indexing)**
 
@@ -724,7 +743,7 @@ public class Main {
       ```js
       db.sales.find().limit(2)
       ```
-      ![alt text](image-20.png)
+      ![alt text](/assets/image-20.png)
 
     - **sort({field:n})**
        
@@ -737,14 +756,14 @@ public class Main {
       ```js
       db.sales.find().sort({item:1})
       ```
-      ![alt text](image-21.png)
+      ![alt text](/assets/image-21.png)
 
       ```js
       db.movies.find({"imdb.rating":{
         $ge:6
       }},{"imdb.rating":-1}).sort({"imdb.rating":-1})
       ```
-      ![alt text](image-22.png)
+      ![alt text](/assets/image-22.png)
 
   - ## Returning Specific Data from a Query 
   
@@ -757,7 +776,7 @@ public class Main {
     ```js
     db.movies.find().projection({cast:1});
     ```
-    ![alt text](image-23.png)
+    ![alt text](/assets/image-23.png)
 
     - Getting more than 1 field along with _id.
   
@@ -767,7 +786,7 @@ public class Main {
     ```js
     db.movies.find().projection({cast:1,title:1})
     ```
-    ![alt text](image-24.png)
+    ![alt text](/assets/image-24.png)
 
     - Excluding the desired filed.
    
@@ -776,7 +795,7 @@ public class Main {
       db.movies.find().projection({cast:0,title:0})
       ```
 
-      ![alt text](image-25.png)
+      ![alt text](/assets/image-25.png)
     
   - ## Counting Documents in MongoDB Documents
     
@@ -788,7 +807,7 @@ public class Main {
       ```js
       db.movies.countDocuments()
       ```
-      ![alt text](image-26.png)
+      ![alt text](/assets/image-26.png)
 
       *Example*
       ```js
@@ -797,7 +816,7 @@ public class Main {
       })
       ```
 
-      ![alt text](image-27.png)
+      ![alt text](/assets/image-27.png)
 
 ---
 **[Back To Top ⬆ ](#indexing)**
@@ -853,7 +872,7 @@ db.theaters.aggregate([
   }
 ])
 ```
-![alt text](image-28.png)
+![alt text](/assets/image-28.png)
 ### Combined Example: $match and $group
 
 You might also want to find the count of theaters in each city within Texas (`TX`).
@@ -873,7 +892,7 @@ db.theaters.aggregate([
   }
 ])
 ```
-![alt text](image-29.png)
+![alt text](/assets/image-29.png)
 
 ### Breakdown of the Stages
 
@@ -935,7 +954,7 @@ db.theaters.aggregate([
   }
 ])
 ```
-![alt text](image-30.png)
+![alt text](/assets/image-30.png)
 
 ### Breakdown of the Stages
 
@@ -1037,7 +1056,7 @@ db.theaters.aggregate([
 ])
 
 ```
-![alt text](image-31.png)
+![alt text](/assets/image-31.png)
 
 ### Breakdown of the Stages
 
@@ -1132,7 +1151,7 @@ This pipeline processes the documents and writes the results to the `texas_theat
   "fullAddress": "2041 Highway 287 N, Mansfield, TX, 76063"
 }
 ```
-![alt text](image-32.png)
+![alt text](/assets/image-32.png)
 
 The `$out` stage will overwrite the `texas_theaters_summary` collection if it already exists. If it does not exist, MongoDB will create it.
 
@@ -1787,3 +1806,167 @@ db.jobs.aggregate([
 
 MongoDB Atlas Search offers a robust, fully integrated search solution for your MongoDB data. By enabling full-text search, faceted search, and autocomplete capabilities, it enhances the user experience and allows for more sophisticated querying of your data. This makes it an excellent choice for applications like your JobApp, where searching and filtering through job listings are essential features.
 
+**[Back To Top ⬆ ](#indexing)**
+
+# INTRODUCTION TO DATA MODELING IN MONGODB
+
+## Introduction to MongoDB Data Modeling
+
+Data modeling in MongoDB is the process of creating a data structure that matches the requirements of the application, taking into account how the data will be queried and updated. Unlike traditional SQL databases, MongoDB uses a flexible schema design that allows for the storage of varied and complex data structures.
+
+## Introduction to Data Modeling
+
+Data modeling involves defining the structure of data in a way that is optimized for the application’s requirements. It includes determining the relationships between different types of data and how they will be stored and accessed. In MongoDB, this involves using collections and documents instead of tables and rows.
+
+## Types of Data Relationships
+
+### 1. One-to-One
+A one-to-one relationship occurs when a single document is related to another single document. For example, a user profile and user settings might have a one-to-one relationship.
+
+### 2. One-to-Many
+A one-to-many relationship exists when a single document is related to multiple documents. For instance, a single customer can have multiple orders.
+
+### 3. Many-to-Many
+A many-to-many relationship is when multiple documents are related to multiple other documents. An example would be students and courses, where a student can enroll in multiple courses and a course can have multiple students.
+
+## Modeling Data Relationships
+
+### Embedding Data in Documents
+Embedding data means storing related data within a single document. This approach is useful when you frequently need to retrieve the related data together. It improves read performance by reducing the need for joins.
+
+**Example:**
+```json
+{
+  "title": "Post Title",
+  "content": "Post Content",
+  "comments": [
+    {
+      "author": "Commenter Name",
+      "content": "Comment Content"
+    }
+  ]
+}
+```
+
+### Referencing Data in Documents
+Referencing involves storing the related data in separate documents and using references (or links) between them. This approach is useful for maintaining data consistency and avoiding duplication.
+
+**Example:**
+```json
+// Post Document
+{
+  "title": "Post Title",
+  "content": "Post Content",
+  "comments": [
+    ObjectId("comment_id_1"),
+    ObjectId("comment_id_2")
+  ]
+}
+
+// Comment Document
+{
+  "_id": ObjectId("comment_id_1"),
+  "author": "Commenter Name",
+  "content": "Comment Content",
+  "postId": ObjectId("post_id")
+}
+```
+
+## Scaling a Data Model
+
+As your application grows, you need to ensure that your data model can scale effectively. Considerations for scaling include:
+
+- **Sharding:** Distributing data across multiple servers to handle large volumes of data and traffic.
+- **Indexing:** Creating indexes to improve query performance.
+- **Data Partitioning:** Dividing data into partitions to manage and query large datasets efficiently.
+
+## Using Atlas Tools for Schema Help
+
+MongoDB Atlas provides several tools to help with schema design and optimization:
+
+- **Schema Analyzer:** Analyzes your data and suggests schema improvements.
+- **Performance Advisor:** Provides indexing suggestions based on your query patterns.
+- **Data Explorer:** Allows you to visually explore your data and understand its structure.
+
+**[Back To Top ⬆ ](#indexing)**
+
+# MONGODB TRANSACTIONS
+
+## Introduction to ACID Transactions
+
+
+### Introduction to ACID Transactions
+ACID stands for Atomicity, Consistency, Isolation, and Durability, which are a set of properties that ensure reliable processing of database transactions.
+
+- **Atomicity:** Ensures that all operations within a transaction are completed successfully; otherwise, the transaction is aborted.
+- **Consistency:** Ensures that the database remains in a valid state before and after the transaction.
+- **Isolation:** Ensures that the operations within a transaction are isolated from other concurrent transactions.
+- **Durability:** Ensures that once a transaction is committed, it remains so, even in the event of a system failure.
+
+### ACID Transactions in MongoDB
+MongoDB supports multi-document ACID transactions, which allow multiple operations to be executed within a single transaction. This ensures that the operations are executed in an all-or-nothing manner, maintaining the integrity of the database.
+
+## Using Transactions in MongoDB
+
+MongoDB transactions can be used in a variety of scenarios, such as when multiple documents need to be updated atomically or when complex operations must be executed while maintaining database consistency.
+
+### Example of Using Transactions in MongoDB
+
+```javascript
+const { MongoClient } = require('mongodb');
+
+async function run() {
+  const uri = "your_mongodb_connection_string";
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const session = client.startSession();
+
+    session.startTransaction();
+
+    const usersCollection = client.db("exampleDB").collection("users");
+    const ordersCollection = client.db("exampleDB").collection("orders");
+
+    try {
+      await usersCollection.updateOne(
+        { _id: 1 },
+        { $inc: { balance: -100 } },
+        { session }
+      );
+
+      await ordersCollection.insertOne(
+        {
+          userId: 1,
+          item: "item_name",
+          price: 100
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+      console.log("Transaction committed.");
+    } catch (error) {
+      await session.abortTransaction();
+      console.error("Transaction aborted due to an error: ", error);
+    } finally {
+      session.endSession();
+    }
+  } finally {
+    await client.close();
+  }
+}
+
+run().catch(console.dir);
+```
+
+### Key Steps in Using Transactions
+1. **Start a Session:** Transactions are associated with sessions.
+2. **Start a Transaction:** Begin the transaction using `startTransaction()`.
+3. **Perform Operations:** Execute the necessary operations within the transaction.
+4. **Commit or Abort:** Depending on the outcome, either commit the transaction using `commitTransaction()` or abort it using `abortTransaction()`.
+5. **End the Session:** Clean up by ending the session.
+
+Using transactions effectively ensures data integrity and consistency, particularly in scenarios involving multiple document updates or complex operations.
+
+---
