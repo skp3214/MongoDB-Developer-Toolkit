@@ -487,7 +487,7 @@ public class Main {
       ```js
       db.sales.find()
       ```
-      ![alt text](image-2.png)
+      ![alt text](/assets/image-2.png)
 
   - ## findOne()
         db.<collection>.findOne()
