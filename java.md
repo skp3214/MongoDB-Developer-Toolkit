@@ -4,6 +4,8 @@
 
 - [Connecting to MongoDB in Java](#connecting-to-mongodb-in-java)
 - [CRUD Operations](#crud-operations)
+- [MongoDB Transaction](#mongodb-transactions)
+- [MongoDB Aggregation](#mongodb-aggregation)
 
 
 # CONNECTING TO MONGODB IN JAVA
@@ -476,3 +478,135 @@ public class MongoDBTransactionExample {
 - **Error Handling:** Proper error handling ensures that transactions are rolled back if something goes wrong.
 
 This Java example follows the same transaction principles as shown in the JavaScript code but uses the MongoDB Java driver for implementation.
+
+# MONGODB AGGREGATION
+
+Certainly! Here are the MongoDB aggregation examples in Java, without the connection code.
+
+### Example 1: `$match` and `$group`
+
+```java
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+import java.util.Arrays;
+
+public class MongoDBAggregationExample {
+
+    public static void main(String[] args) {
+        MongoCollection<Document> theatersCollection = database.getCollection("theaters");
+
+        // Aggregation pipeline
+        var pipeline = Arrays.asList(
+            Aggregates.match(Filters.eq("location.address.state", "TX")),
+            Aggregates.group("$location.address.city",
+                new Document("theaterCount", new Document("$sum", 1))
+            )
+        );
+
+        // Run aggregation
+        theatersCollection.aggregate(pipeline).forEach(doc -> System.out.println(doc.toJson()));
+    }
+}
+```
+
+### Example 2: `$sort` and `$limit`
+
+```java
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Sorts;
+import org.bson.Document;
+import java.util.Arrays;
+
+public class MongoDBAggregationSortLimitExample {
+
+    public static void main(String[] args) {
+        MongoCollection<Document> theatersCollection = database.getCollection("theaters");
+
+        // Aggregation pipeline
+        var pipeline = Arrays.asList(
+            Aggregates.sort(Sorts.descending("theaterId")),
+            Aggregates.limit(3)
+        );
+
+        // Run aggregation
+        theatersCollection.aggregate(pipeline).forEach(doc -> System.out.println(doc.toJson()));
+    }
+}
+```
+
+### Example 3: `$project`, `$count`, and `$set`
+
+```java
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import java.util.Arrays;
+
+public class MongoDBAggregationProjectCountSetExample {
+
+    public static void main(String[] args) {
+        MongoCollection<Document> theatersCollection = database.getCollection("theaters");
+
+        // Aggregation pipeline
+        var pipeline = Arrays.asList(
+            Aggregates.project(Projections.fields(
+                Projections.include("theaterId", "location.address.city"),
+                Projections.excludeId()
+            )),
+            Aggregates.group(null, new Document("totalTheaters", new Document("$sum", 1))),
+            Aggregates.set(Updates.set("label", "Number of Theaters"))
+        );
+
+        // Run aggregation
+        theatersCollection.aggregate(pipeline).forEach(doc -> System.out.println(doc.toJson()));
+    }
+}
+```
+
+### Example 4: `$out`
+
+```java
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import java.util.Arrays;
+
+public class MongoDBAggregationOutExample {
+
+    public static void main(String[] args) {
+        MongoCollection<Document> theatersCollection = database.getCollection("theaters");
+
+        // Aggregation pipeline
+        var pipeline = Arrays.asList(
+            Aggregates.match(Filters.eq("location.address.state", "TX")),
+            Aggregates.group("$location.address.city",
+                new Document("theaterCount", new Document("$sum", 1))
+            ),
+            Aggregates.set(Updates.set("fullAddress",
+                new Document("$concat", Arrays.asList(
+                    "$location.address.street1", ", ",
+                    "$location.address.city", ", ",
+                    "$location.address.state", ", ",
+                    "$location.address.zipcode"
+                ))
+            )),
+            Aggregates.project(Projections.fields(
+                Projections.include("theaterCount", "fullAddress"),
+                Projections.excludeId()
+            )),
+            Aggregates.out("texas_theaters_summary")
+        );
+
+        // Run aggregation
+        theatersCollection.aggregate(pipeline).forEach(doc -> System.out.println(doc.toJson()));
+    }
+}
+```
