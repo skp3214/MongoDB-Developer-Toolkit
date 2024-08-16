@@ -1,7 +1,7 @@
 
-use('iNoteBook');
+use('sample_mflix');
 
-db.notes.un
+db.movies.find({year:2012})
   
   
 
